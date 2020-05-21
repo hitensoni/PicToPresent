@@ -8,7 +8,7 @@ try:
     import mtcnn
     from PIL import Image
 except ImportError:
-    print("There was a problem in importing one or more modules.")
+    sys.exit("There was a problem in importing one or more modules.")
     
 # Custom class to handle exceptions while detecting face.
 class DetectionError(Exception):
@@ -29,9 +29,8 @@ def imagePath(roll):
             return 'end'
     return 'ok', path
 
-
 # Utility function to detect and return face found in live frames as numpy array.
-def detectFace(img):
+def detect_face(img):
     pixels = np.asarray(img)
     detector = mtcnn.MTCNN()
     faces = detector.detect_faces(pixels)
