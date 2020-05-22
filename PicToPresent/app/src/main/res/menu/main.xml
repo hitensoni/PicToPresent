@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/showMenu"
+        android:title="Show Attendance"
+        android:orderInCategory="1"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/editMenu"
+        android:title="Edit Attendance"
+        android:orderInCategory="2"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/aboutMenu"
+        android:title="About"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_info"/>
+
+    <item android:id="@+id/developerMenu"
+        android:title="Developer Info"
+        android:orderInCategory="3"
+        app:showAsAction="never"/>
+
+</menu>
