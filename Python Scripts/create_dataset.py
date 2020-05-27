@@ -21,13 +21,12 @@ def extract_face(filename, required_size=(160, 160)):
 #     print(filename)
     image = Image.open(filename)
     image = image.convert('RGB')
-    if image.width>image.height:
-        image = image.rotate(270)
+    
     pixels = np.asarray(image)
     detector = mtcnn.MTCNN()
     faces = detector.detect_faces(pixels)
-    if len(faces)!=1:
-        print('Either multiple or no faces were detected in the image : {} '.format(filename))
+    if len(faces)==0:
+        #print('No faces were detected in the image {}'.format(filename))
         return 'end', 'end'
     x1, y1, width, height = faces[0]['box']
     x1, y1 = abs(x1), abs(y1)
@@ -91,14 +90,16 @@ def get_embeddings(trainX, testX):
         newtestX = np.asarray(newtestX)
         return newtrainX, newtestX
 
+    
 def initialize():
+#     To hide tensorflow warnings during runtime.
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     
 # Main function.
 def main():
     initialize()
-    trainPath = 'DATA/Images/Dataset/train/'
-    testPath = 'DATA/Images/Dataset/test/'
+    trainPath = 'DATA/Images/train/'
+    testPath = 'DATA/Images/val/'
     try:
         print('***Working on train data***')
         trainX, trainy = load_dataset(trainPath)
@@ -112,6 +113,7 @@ def main():
         print('')
         print('Size of train data is : {}.'.format(len(trainX)))
         print('Size of test data is : {}.'.format(len(testX)))
+#         Saving the face data and labels in form of numpy compressed file.
         np.savez_compressed('DATA/face_data.npz', trainX, trainy, testX, testy)
         print('Data has been stored in numpy compressed form in the DATA folder.')
         print('')
@@ -120,9 +122,9 @@ def main():
         trainX, trainy, testX, testy = data['arr_0'], data['arr_1'], data['arr_2'], data['arr_3']
         print('Loaded : {} {} {} {}'.format(trainX.shape, trainy.shape, testX.shape, testy.shape))
         
-#       Create embedding for faces using Facenet model.
+#       Create embedding for faces using Facenet model. Make sure facenet h5 file exists in the same directory as specified in the code.
         newtrainX, newtestX = get_embeddings(trainX, testX)
-        np.savez_compressed('face_data_embedded.npz', newtrainX, trainy, newtestX, testy)
+        np.savez_compressed('DATA/face_data_embedded.npz', newtrainX, trainy, newtestX, testy)
         print('Embedded data has been stored in 1x128 vectors in the DATA folder.')
         print('*******end*******')
         
