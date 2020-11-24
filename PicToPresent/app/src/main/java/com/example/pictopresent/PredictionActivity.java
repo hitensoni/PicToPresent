@@ -59,7 +59,7 @@ public class PredictionActivity extends AppCompatActivity {
     public void connectServer(View view) {
         String ip = etIP.getText().toString();
         String port = etPort.getText().toString();
-        String postUrl = "http://" + ip + ":" + port + "/predict/";
+        String postUrl = "http://" + ip + ":" + port + "/";
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.RGB_565;
@@ -77,8 +77,8 @@ public class PredictionActivity extends AppCompatActivity {
 
     private void postRequest(String postUrl, RequestBody requestBody) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(25, TimeUnit.SECONDS)
-                .readTimeout(25, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
                 .build();
         final Request request = new Request.Builder()
                 .url(postUrl)
