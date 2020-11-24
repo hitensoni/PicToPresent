@@ -1,7 +1,4 @@
 # Import statements.
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
-
 try:
     import os
     import sys
@@ -12,7 +9,7 @@ try:
     from PIL import Image
 except ImportError:
     sys.exit("There was a problem in importing one or more modules.")
-
+    
 # Custom class to handle exceptions while detecting face.
 class DetectionError(Exception):
     pass
