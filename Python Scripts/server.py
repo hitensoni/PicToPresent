@@ -2,14 +2,17 @@ import flask
 import werkzeug
 import os
 import logging
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
-logging.getLogger('tensorflow').setLevel(logging.FATAL)
+
 import numpy as np
+import tensorflow as tf
+from keras.models import load_model
 from mtcnn.mtcnn import MTCNN
 from PIL import Image
-import tensorflow as tf
+from sklearn.preprocessing import LabelEncoder
 
-from keras.models import load_model
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
+logging.getLogger('tensorflow').setLevel(logging.FATAL)
+
 app = flask.Flask(__name__)
 model = load_model('my_model.h5')
 facenet_model = load_model('facenet_keras.h5')
@@ -46,6 +49,17 @@ def get_embedding(pixels):
     yhat = facenet_model.predict(samples)
     return yhat[0]
 
+def get_out_encoder():
+    try:
+        data = np.load('DATA/face_data_embedded.npz')
+    except:
+        sys.exit('There was a problem while importing embedded dataset. Make sure you have specified the correct path.')
+        
+    trainX, trainy, testX, testy = data['arr_0'], data['arr_1'], data['arr_2'], data['arr_3']
+    
+    out_encoder = LabelEncoder()
+    out_encoder.fit(trainy)
+    return out_encoder
 
 @app.route('/', methods=['GET', 'POST'])
 def test():
@@ -53,36 +67,38 @@ def test():
     filename = werkzeug.utils.secure_filename(imagefile.filename)
     print("\nReceived image File name : " + imagefile.filename)
     imagefile.save(filename)
+    
+    out_encoder = get_out_encoder()
     faces = extract_face(filename)
     names = []
     accuracyList = []
     embs = []
+    
     for i in range(len(faces)):
         embedding = get_embedding(faces[i])
         embs.append(embedding)
+        
     for emb in embs:
         test = np.expand_dims(emb, axis=0)
-    #     predict_class = model.predict_classes(test)
         predict_class = np.argmax(model.predict(test), axis=-1)
-    #     print('size predict_class = ', predict_class.size)
-    #     print('predict_class: ',predict_class)
         predict_prob = model.predict(test)
-    #     print('size predict_prob = ', predict_prob.size)
-    #     print('predict_prob: ', predict_prob)
         class_index = predict_class[0]
-    #     print('class_index: ', class_index)
-    #     print()
-    #     print('accuracy[0]: ',predict_prob[0])
-    #     print()
         accuracy = predict_prob[0, class_index]
-    #     print('accuracy: ',accuracy)
         accuracy = accuracy*100
         accuracyList.append(accuracy)
         name = out_encoder.inverse_transform(predict_class)
-    #     print('name: ',name)
         names.append(name)
-
-    return "Image Uploaded Successfully"
+        print('name type: ', type(name.tolist()))
+        print('accuracylist type: ', type(accuracyList))
+    
+    print('accuracyList: ')
+    for i in range(len(accuracyList)):
+        print(accuracyList[i])
+    print('name:')
+    for i in range(len(names)):
+        print(names[i])
+#     return "Image Uploaded Successfully"
+    return flask.jsonify(predictions=name.tolist(), probabilities=accuracyList)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

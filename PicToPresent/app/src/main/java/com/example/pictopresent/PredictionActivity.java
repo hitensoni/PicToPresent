@@ -110,10 +110,14 @@ public class PredictionActivity extends AppCompatActivity {
                             JSONArray probabArray = jsonObject.getJSONArray("probabilities");
                             String names = "";
                             String probabs = "";
-                            for(int i=0;i<nameArray.length();i++)
+                            for(int i=0;i<nameArray.length();i++) {
                                 names = names + nameArray.get(i).toString() + "\n";
-                            for(int i=0;i<probabArray.length();i++)
+                                Log.d("check name", nameArray.get(i).toString());
+                            }
+                            for(int i=0;i<probabArray.length();i++) {
                                 probabs = probabs + probabArray.get(i) + "\n";
+                                Log.d("check accuracy", probabArray.get(i).toString());
+                            }
                             tvResult.setText(names);
                             tvProbab.setText(probabs);
                         } catch (IOException e) {

@@ -1,13 +1,12 @@
 # Import statements.
 try:
     import sys
-    from numpy import load
+    import numpy as np
+    import tensorflow as tf
+    
     from keras.models import load_model
     from mtcnn.mtcnn import MTCNN
     from PIL import Image
-    from numpy import asarray
-    from numpy import expand_dims
-    import tensorflow as tf
     from sklearn.preprocessing import LabelEncoder
     from sklearn.preprocessing import Normalizer
 except ImportError:
@@ -17,7 +16,7 @@ except ImportError:
 def getModel():
     model = tf.keras.Sequential([
     tf.keras.layers.Dense(128, activation=tf.nn.relu),
-    tf.keras.layers.Dense(4, activation=tf.nn.softmax)
+    tf.keras.layers.Dense(13, activation=tf.nn.softmax)
     ])
     model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
@@ -26,31 +25,34 @@ def getModel():
 
 # Main Method.
 def main():
+    
     model = getModel()
+    
     try:
-        data = np.load('face_data_embedded.npz')
+        data = np.load('DATA/face_data_embedded.npz')
     except:
         sys.exit('There was a problem while importing embedded dataset. Make sure you have specified the correct path.')
-    try:
-        facenet_model = load_model('facenet_keras.h5')
-    except:
-        sys.exit('There was a problem while loading Facenet model. Make sure you have specified the correct path.')
+        
     trainX, trainy, testX, testy = data['arr_0'], data['arr_1'], data['arr_2'], data['arr_3']
+    
 #     Encode the embedded data
     in_encoder = Normalizer('l2')
     trainX = in_encoder.transform(trainX)
     testX = in_encoder.transform(testX)
+    
 #     Encode the labels
     out_encoder = LabelEncoder()
     out_encoder.fit(trainy)
     trainy = out_encoder.transform(trainy)
     testy = out_encoder.transform(testy)
+    
 #     Train the model
     model.fit(trainX, trainy, epochs = 100)
     test_loss, test_acc = model.evaluate(testX, testy)
     print('The test data lost and accuracy of your dataset is : '.format(test_loss, test_acc))
     model.save('my_model.h5')
     print('Converting the model into tflite...\n')
+    
 #     Saving the model as a tflite file.	
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     tflite_model = converter.convert()
