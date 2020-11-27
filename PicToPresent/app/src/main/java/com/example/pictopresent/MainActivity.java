@@ -222,9 +222,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
-            case R.id.showMenu  :
+            case R.id.showAttendanceMenu  :
                                     break;
-            case R.id.editMenu  :
+            case R.id.editAttendanceMenu  :
                                     break;
             case R.id.aboutMenu :
                                     break;
