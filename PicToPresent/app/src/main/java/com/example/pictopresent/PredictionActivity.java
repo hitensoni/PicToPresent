@@ -107,19 +107,23 @@ public class PredictionActivity extends AppCompatActivity {
                             String jsonData = response.body().string();
                             JSONObject jsonObject = new JSONObject(jsonData);
                             JSONArray nameArray = jsonObject.getJSONArray("predictions");
-                            JSONArray probabArray = jsonObject.getJSONArray("probabilities");
+                            JSONArray probabilityArray = jsonObject.getJSONArray("probabilities");
                             String names = "";
-                            String probabs = "";
+                            String probability = "";
+
+                            Log.d("nameArray: ", nameArray.length()+"");
+                            Log.d("probabilityArray: ", probabilityArray.length()+"");
+
                             for(int i=0;i<nameArray.length();i++) {
                                 names = names + nameArray.get(i).toString() + "\n";
                                 Log.d("check name", nameArray.get(i).toString());
                             }
-                            for(int i=0;i<probabArray.length();i++) {
-                                probabs = probabs + probabArray.get(i) + "\n";
-                                Log.d("check accuracy", probabArray.get(i).toString());
+                            for(int i=0;i<probabilityArray.length();i++) {
+                                probability = probability + probabilityArray.get(i) + "\n";
+                                Log.d("check accuracy", probabilityArray.get(i).toString());
                             }
                             tvResult.setText(names);
-                            tvProbab.setText(probabs);
+                            tvProbab.setText(probability);
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (JSONException e){
