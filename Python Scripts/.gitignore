@@ -1,0 +1,5 @@
+DATA/
+image.jpg
+.ipynb_checkpoints
+testImages/
+*.tflite
