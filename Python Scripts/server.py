@@ -2,20 +2,18 @@ import flask
 import werkzeug
 import os
 import logging
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
+logging.getLogger('tensorflow').setLevel(logging.FATAL)
 import numpy as np
 import tensorflow as tf
-from keras.models import load_model
+import keras
 from mtcnn.mtcnn import MTCNN
 from PIL import Image
 from sklearn.preprocessing import LabelEncoder
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
-logging.getLogger('tensorflow').setLevel(logging.FATAL)
-
 app = flask.Flask(__name__)
-model = load_model('my_model.h5')
-facenet_model = load_model('facenet_keras.h5')
+model = tf.keras.models.load_model('my_model.h5', compile=False)
+facenet_model = tf.keras.models.load_model('facenet_keras.h5')
 
 def extract_face(filename, required_size=(160, 160)):
 #     print(filename)
