@@ -85,18 +85,9 @@ def test():
         accuracy = accuracy*100
         accuracyList.append(accuracy)
         name = out_encoder.inverse_transform(predict_class)
-        names.append(name)
-        print('name type: ', type(name.tolist()))
-        print('accuracylist type: ', type(accuracyList))
-    
-    print('accuracyList: ')
-    for i in range(len(accuracyList)):
-        print(accuracyList[i])
-    print('name:')
-    for i in range(len(names)):
-        print(names[i])
-#     return "Image Uploaded Successfully"
-    return flask.jsonify(predictions=name.tolist(), probabilities=accuracyList)
+        names.append(name.tolist())
+
+    return flask.jsonify(predictions=names, probabilities=accuracyList)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
